@@ -34,4 +34,4 @@ inductive DataType where
   -- This is utils to represent null bulk strings
   -- and null arrays.
   | Null
-  deriving Inhabited, Repr
+  deriving Inhabited, Repr, BEq

@@ -7,12 +7,12 @@ package «Redis» where
 lean_lib «Redis» where
   -- add library configuration options here
 
-@[default_target]
-lean_exe «redis» where
-  root := `Main
-  -- Enables the use of the Lean interpreter by the executable (e.g.,
-  -- `runFrontend`) at the expense of increased binary size on Linux.
-  -- Remove this line if you do not need such functionality.
+lean_lib «Tests» where
+  -- add library configuration options here
+
+lean_exe «test» where
+  root := `Tests
   supportInterpreter := true
 
 require soda from git "https://github.com/algebraic-sofia/soda.git"
+require Specs from git "https://github.com/axiomed/Specs.lean.git"
