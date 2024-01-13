@@ -14,3 +14,5 @@ lean_exe «redis» where
   -- `runFrontend`) at the expense of increased binary size on Linux.
   -- Remove this line if you do not need such functionality.
   supportInterpreter := true
+
+require soda from git "https://github.com/algebraic-sofia/soda.git"

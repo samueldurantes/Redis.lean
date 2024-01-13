@@ -1,5 +1,14 @@
 {"version": 7,
  "packagesDir": ".lake/packages",
- "packages": [],
+ "packages":
+ [{"url": "https://github.com/algebraic-sofia/soda.git",
+   "type": "git",
+   "subDir": null,
+   "rev": "41c34bb9472b700dd6682dd37f3f0dfae45ed947",
+   "name": "soda",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": null,
+   "inherited": false,
+   "configFile": "lakefile.lean"}],
  "name": "Redis",
  "lakeDir": ".lake"}
