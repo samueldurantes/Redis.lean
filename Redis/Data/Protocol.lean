@@ -5,8 +5,6 @@ import Redis.Data.DataType
 open Grape
 open Function
 
-def crlf := "\r\n"
-
 def replicateM {α} (n : Nat) (parser : Grape α) : Grape (List α) :=
   List.foldrM (λ _ acc => List.cons <$> parser <*> (Grape.pure acc)) List.nil (List.replicate n ())
 
@@ -22,26 +20,26 @@ def Grape.Text.int : Grape Int := do
 
 def simpleStringParse : Grape DataType := do
   let s ← Grape.takeWhile (λchr => chr ≠ 13)
-  let _ ← Grape.string crlf
+  let _ ← Grape.Text.Char.eol
   Grape.pure $ DataType.SimpleString $ s.toASCIIString
 
 def simpleErrorParse : Grape DataType := do
   let e ← Grape.takeWhile (λchr => chr ≠ 13)
-  let _ ← Grape.string crlf
+  let _ ← Grape.Text.Char.eol
   Grape.pure $ DataType.SimpleError $ e.toASCIIString
 
 def integerParse : Grape DataType := do
   let n ← Grape.Text.int
-  let _ ← Grape.string crlf
+  let _ ← Grape.Text.Char.eol
   Grape.pure $ DataType.Integer n
 
 def bulkStringParse : Grape DataType := do
   let n ← Grape.Text.int
   if n > 0
     then
-      let _ ← Grape.string crlf
+      let _ ← Grape.Text.Char.eol
       let e ← Grape.takeWhile (λchr => chr ≠ 13)
-      let _ ← Grape.string crlf
+      let _ ← Grape.Text.Char.eol
       Grape.pure $ DataType.BulkString $ e.toASCIIString
     else
       Grape.pure DataType.Null
@@ -51,7 +49,7 @@ partial def arrayParse : Grape DataType := do
   let n ← Grape.Text.int
   if n > 0
     then
-      let _  ← Grape.string crlf
+      let _  ← Grape.Text.Char.eol
       let ds ← replicateM n.toNat dataTypeParse
       Grape.pure $ DataType.Array $ List.toArray ds
     else
