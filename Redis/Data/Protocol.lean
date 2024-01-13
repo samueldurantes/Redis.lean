@@ -16,7 +16,10 @@ def Grape.Text.int : Grape Int := do
   match s.toASCIIString with
   | "+" => Grape.pure $ String.toInt! d.toASCIIString
   | "-" => Grape.pure $ -String.toInt! d.toASCIIString
-  | _   => Grape.fail "Should be a '+' or '-' symbol"
+  | s   =>
+    if s.isEmpty
+      then Grape.pure $ String.toInt! d.toASCIIString
+      else Grape.fail "Should be a '+' or '-' symbol"
 
 def simpleStringParse : Grape DataType := do
   let s ← Grape.takeWhile (λchr => chr ≠ 13)
@@ -35,24 +38,26 @@ def integerParse : Grape DataType := do
 
 def bulkStringParse : Grape DataType := do
   let n ← Grape.Text.int
-  if n > 0
+  if n >= 0
     then
       let _ ← Grape.Text.Char.eol
       let e ← Grape.takeWhile (λchr => chr ≠ 13)
       let _ ← Grape.Text.Char.eol
       Grape.pure $ DataType.BulkString $ e.toASCIIString
     else
+      let _ ← Grape.Text.Char.eol
       Grape.pure DataType.Null
 
 mutual
 partial def arrayParse : Grape DataType := do
   let n ← Grape.Text.int
-  if n > 0
+  if n >= 0
     then
       let _  ← Grape.Text.Char.eol
       let ds ← replicateM n.toNat dataTypeParse
-      Grape.pure $ DataType.Array $ List.toArray ds
+      Grape.pure $ DataType.Array $ List.toArray (List.reverse ds)
     else
+      let _ ← Grape.Text.Char.eol
       Grape.pure DataType.Null
 
 partial def dataTypeParse : Grape DataType := do
