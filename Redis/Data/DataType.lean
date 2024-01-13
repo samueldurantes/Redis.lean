@@ -12,7 +12,7 @@ inductive DataType where
   | SimpleError : String → DataType
 
   -- Example: `:100\r\n`
-  | Integers : Int → DataType
+  | Integer : Int → DataType
 
   -- Bulk strings are used to transmit binary safe string
   -- with max size of 512 MB.
@@ -34,3 +34,4 @@ inductive DataType where
   -- This is utils to represent null bulk strings
   -- and null arrays.
   | Null
+  deriving Inhabited, Repr
