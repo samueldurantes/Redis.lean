@@ -11,7 +11,7 @@ def replicateM {α} (n : Nat) (parser : Grape α) : Grape (List α) :=
 def Grape.Text.Char.eol := Grape.string "\r\n"
 
 def Grape.Text.int : Grape Int := do
-  let s ← Grape.takeWhile [43, 45].contains
+  let s ← Grape.takeWhile (λchr => chr == 43 || chr == 45)
   let d ← Grape.takeWhile1 (λchr => Char.isDigit $ Char.ofNat chr.toNat)
   match s.toASCIIString with
   | "+" => Grape.pure $ String.toInt! d.toASCIIString
