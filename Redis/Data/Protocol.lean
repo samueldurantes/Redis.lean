@@ -2,8 +2,10 @@ import Soda.Grape
 import Soda.Grape.Text
 import Redis.Data.DataType
 
+namespace Redis.Data.Protocol
 open Grape
 open Function
+open Redis.Data.DataType
 
 def replicateM {α} (n : Nat) (parser : Grape α) : Grape (List α) :=
   List.foldrM (λ _ acc => List.cons <$> parser <*> (Grape.pure acc)) List.nil (List.replicate n ())

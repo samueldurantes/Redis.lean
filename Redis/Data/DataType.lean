@@ -1,3 +1,5 @@
+namespace Redis.Data.DataType
+
 inductive DataType where
   -- Simple strings are used to transmit non binary
   -- safe string.

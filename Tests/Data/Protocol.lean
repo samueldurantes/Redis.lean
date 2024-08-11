@@ -7,6 +7,8 @@ import «Redis».Data.Protocol
 open Specs
 open Specs.Matchers
 open Specs.Macro
+open Redis.Data.DataType
+open Redis.Data.Protocol
 
 instance : Repr ByteSlice where
   reprPrec b _ := b.toASCIIString
