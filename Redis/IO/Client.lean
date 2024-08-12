@@ -17,7 +17,7 @@ def new (o1 o2 o3 o4 : UInt8) (port : UInt16) : IO Client := do
   pure { socket }
 
 def send (client : Client) (command : String) : IO String := do
-  let _ ← client.socket.send command.toUTF8
+  discard <| client.socket.send command.toUTF8
 
   let bytes ← client.socket.recv 1024
   pure (String.fromUTF8! bytes)

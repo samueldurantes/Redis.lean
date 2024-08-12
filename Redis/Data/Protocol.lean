@@ -31,29 +31,29 @@ def replicateM {α} (n : Nat) (parser : Grape α) : Grape (List α) :=
 
 def simpleStringParse : Grape DataType := do
   let s ← Grape.takeWhile (λchr => chr ≠ 13)
-  let _ ← Grape.text.eol
+  discard <| Grape.text.eol
   Grape.pure $ DataType.simpleString $ s.toASCIIString
 
 def simpleErrorParse : Grape DataType := do
   let e ← Grape.takeWhile (λchr => chr ≠ 13)
-  let _ ← Grape.text.eol
+  discard <| Grape.text.eol
   Grape.pure $ DataType.simpleError $ e.toASCIIString
 
 def integerParse : Grape DataType := do
   let n ← Grape.text.int
-  let _ ← Grape.text.eol
+  discard <| Grape.text.eol
   Grape.pure $ DataType.integer n
 
 def bulkStringParse : Grape DataType := do
   let n ← Grape.text.int
   if n >= 0
     then
-      let _ ← Grape.text.eol
+      discard <| Grape.text.eol
       let e ← Grape.takeWhile (λchr => chr ≠ 13)
-      let _ ← Grape.text.eol
+      discard <| Grape.text.eol
       Grape.pure $ DataType.bulkString $ e.toASCIIString
     else
-      let _ ← Grape.text.eol
+      discard <| Grape.text.eol
       Grape.pure DataType.null
 
 mutual
@@ -61,11 +61,11 @@ partial def arrayParse : Grape DataType := do
   let n ← Grape.text.int
   if n >= 0
     then
-      let _  ← Grape.text.eol
+      discard <| Grape.text.eol
       let ds ← replicateM n.toNat dataTypeParse
       Grape.pure $ DataType.array $ List.toArray (List.reverse ds)
     else
-      let _ ← Grape.text.eol
+      discard <| Grape.text.eol
       Grape.pure DataType.null
 
 partial def dataTypeParse : Grape DataType := do
