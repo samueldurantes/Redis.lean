@@ -1,39 +1,55 @@
-namespace Redis.Data.DataType
+namespace Redis
+namespace Data
 
+/--
+Data type definition for Redis.
+-/
 inductive DataType where
-  -- Simple strings are used to transmit non binary
-  -- safe string.
+  /--
+  Simple strings are used to transmit non-binary
+  safe strings.
+  -/
+  | simpleString : String → DataType
 
-  -- Example: `+OK\r\n`
-  | SimpleString : String → DataType
+  /--
+  Simple errors are similar to simple strings,
+  but they are used to transmit errors as exceptions.
 
-  -- Simple error is similar to the simple string,
-  -- but it's used to transmit error as exceptions.
+  Example: `-ERR unknown command 'hamood'`
+  -/
+  | simpleError : String → DataType
 
-  -- Example: `-ERR unknown command 'hamood'`
-  | SimpleError : String → DataType
+  /--
+  Represents an integer in Redis.
 
-  -- Example: `:100\r\n`
-  | Integer : Int → DataType
+  Example: `:100\r\n`
+  -/
+  | integer : Int → DataType
 
-  -- Bulk strings are used to transmit binary safe string
-  -- with max size of 512 MB.
+  /--
+  Bulk strings are used to transmit binary-safe strings
+  with a maximum size of 512 MB.
 
-  -- Example: `$5\r\nhello\r\n`
+  Example: `$5\r\nhello\r\n`
 
-  -- Note that you need to specify the number of bytes of
-  -- string that you want to represent.
-  | BulkString : String → DataType
+  Note: You need to specify the number of bytes of
+  the string you want to represent.
+  -/
+  | bulkString : String → DataType
 
-  -- Examples: `*2\r\n$5\r\nhello\r\n$5\r\nworld\r\n`
-  --           `*0\r\n`
+  /--
+  Arrays can hold multiple `DataType` values.
 
-  -- Note that in the same way you need to specify
-  -- the number of bytes of a bulk string, you need to
-  -- specify the length of your array.
-  | Array : (Array DataType) → DataType
+  Examples: `*2\r\n$5\r\nhello\r\n$5\r\nworld\r\n`
+            `*0\r\n`
 
-  -- This is utils to represent null bulk strings
-  -- and null arrays.
-  | Null
+  Note: As with bulk strings, you need to specify
+  the length of your array.
+  -/
+  | array : Array DataType → DataType
+
+  /--
+  Represents null bulk strings and null arrays in Redis.
+  -/
+  | null : DataType
   deriving Inhabited, Repr, BEq

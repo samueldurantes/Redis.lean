@@ -1,6 +1,6 @@
 import «Redis».IO.Client
 
-open «Redis».IO.Client
+open «Redis».IO
 
 def main : IO Unit := do
   let client ← Client.new "127.0.0.1" "6379"

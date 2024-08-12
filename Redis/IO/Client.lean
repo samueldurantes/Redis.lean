@@ -1,13 +1,16 @@
 import Socket
 
-namespace Redis.IO.Client
+namespace Redis
+namespace IO
 open Socket
 
 structure Client where
   private mk ::
   socket : Socket
 
-def Client.new (addr : String) (port : String) : IO Client := do
+namespace Client
+
+def new (addr : String) (port : String) : IO Client := do
   let socket ← Socket.mk AddressFamily.inet SockType.stream
   let remoteAddr ← SockAddr.mk addr port AddressFamily.inet SockType.stream
 
@@ -15,7 +18,7 @@ def Client.new (addr : String) (port : String) : IO Client := do
 
   pure { socket }
 
-def Client.send (client : Client) (command : String) : IO String := do
+def send (client : Client) (command : String) : IO String := do
   let _ ← client.socket.send command.toUTF8
 
   let bytesRecv ← client.socket.recv 1024

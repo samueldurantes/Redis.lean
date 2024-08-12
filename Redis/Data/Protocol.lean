@@ -2,17 +2,11 @@ import Soda.Grape
 import Soda.Grape.Text
 import Redis.Data.DataType
 
-namespace Redis.Data.Protocol
-open Grape
-open Function
-open Redis.Data.DataType
+namespace Grape.text
 
-def replicateM {α} (n : Nat) (parser : Grape α) : Grape (List α) :=
-  List.foldrM (λ _ acc => List.cons <$> parser <*> (Grape.pure acc)) List.nil (List.replicate n ())
+def eol := Grape.string "\r\n"
 
-def Grape.Text.Char.eol := Grape.string "\r\n"
-
-def Grape.Text.int : Grape Int := do
+def int : Grape Int := do
   let s ← Grape.takeWhile (λchr => chr == 43 || chr == 45)
   let d ← Grape.takeWhile1 (λchr => Char.isDigit $ Char.ofNat chr.toNat)
   match s.toASCIIString with
@@ -23,44 +17,56 @@ def Grape.Text.int : Grape Int := do
       then Grape.pure $ String.toInt! d.toASCIIString
       else Grape.fail "Should be a '+' or '-' symbol"
 
+end Grape.text
+
+namespace Redis
+namespace Data
+namespace Protocol
+open Grape
+open Function
+open Redis.Data.DataType
+
+def replicateM {α} (n : Nat) (parser : Grape α) : Grape (List α) :=
+  List.foldrM (λ _ acc => List.cons <$> parser <*> (Grape.pure acc)) List.nil (List.replicate n ())
+
 def simpleStringParse : Grape DataType := do
   let s ← Grape.takeWhile (λchr => chr ≠ 13)
-  let _ ← Grape.Text.Char.eol
-  Grape.pure $ DataType.SimpleString $ s.toASCIIString
+  let _ ← Grape.text.eol
+  Grape.pure $ DataType.simpleString $ s.toASCIIString
 
 def simpleErrorParse : Grape DataType := do
   let e ← Grape.takeWhile (λchr => chr ≠ 13)
-  let _ ← Grape.Text.Char.eol
-  Grape.pure $ DataType.SimpleError $ e.toASCIIString
+  let _ ← Grape.text.eol
+  Grape.pure $ DataType.simpleError $ e.toASCIIString
 
 def integerParse : Grape DataType := do
-  let n ← Grape.Text.int
-  let _ ← Grape.Text.Char.eol
-  Grape.pure $ DataType.Integer n
+  let n ← Grape.text.int
+  let _ ← Grape.text.eol
+  Grape.pure $ DataType.integer n
 
 def bulkStringParse : Grape DataType := do
-  let n ← Grape.Text.int
+  let n ← Grape.text.int
   if n >= 0
     then
-      let _ ← Grape.Text.Char.eol
+      let _ ← Grape.text.eol
       let e ← Grape.takeWhile (λchr => chr ≠ 13)
-      let _ ← Grape.Text.Char.eol
-      Grape.pure $ DataType.BulkString $ e.toASCIIString
+      let _ ← Grape.text.eol
+      Grape.pure $ DataType.bulkString $ e.toASCIIString
     else
-      let _ ← Grape.Text.Char.eol
-      Grape.pure DataType.Null
+      let _ ← Grape.text.eol
+      Grape.pure DataType.null
 
 mutual
 partial def arrayParse : Grape DataType := do
-  let n ← Grape.Text.int
+  let n ← Grape.text.int
   if n >= 0
     then
-      let _  ← Grape.Text.Char.eol
+      let _  ← Grape.text.eol
       let ds ← replicateM n.toNat dataTypeParse
-      Grape.pure $ DataType.Array $ List.toArray (List.reverse ds)
+      Grape.pure $ DataType.array $ List.toArray (List.reverse ds)
     else
-      let _ ← Grape.Text.Char.eol
-      Grape.pure DataType.Null
+      let _ ← Grape.text.eol
+      Grape.pure DataType.null
 
 partial def dataTypeParse : Grape DataType := do
   let c ← Grape.takeN 1
