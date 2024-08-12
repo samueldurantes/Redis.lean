@@ -19,5 +19,5 @@ lean_exe «test» where
   supportInterpreter := true
 
 require soda from git "https://github.com/algebraic-sofia/soda.git"
+require socket from git "https://github.com/hargoniX/socket.lean.git"
 require Specs from git "https://github.com/axiomed/Specs.lean.git"
-require Socket from git "https://github.com/KislyjKisel/Socket.lean.git"
